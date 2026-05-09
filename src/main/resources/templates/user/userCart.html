@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Корзина</title>
+</head>
+<body>
+
+<div sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')">
+    <div  th:each="prod : ${myDBCart}">
+        <a th:text="${prod.getProductsName() + ' ' + prod.getProductCount()}"></a>
+        <form th:method="PATCH" th:action="@{cart}">
+            <label th:for="amount1">Изменить количество:</label>
+            <input type="text" id="amount1" name="count" >
+            <input type="hidden" id="product_id" name="product_id" th:value="${prod.getProductId()}" >
+            <input type="hidden" id="user_id" name="user_id" th:value="${prod.getUserId()}" >
+            <input type="submit" value="Изменить">
+        </form>
+
+        <form th:method="DELETE" th:action="@{/stock/{id}(id=${prod.getProductId()})}">
+            <input type="submit" value="Удалить товар">
+        </form>
+    </div>
+
+    <br/>
+    <hr/>
+
+    <form th:if="${myDBCart.size() > 0}" th:method="DELETE" th:action="@{cart}">
+        <input type="hidden" name="user_id" th:value="${myDBCart.getFirst().getUserId()}">
+        <input type="submit" value="Очистить корзину">
+    </form>
+</div>
+
+
+
+<div sec:authorize="!isFullyAuthenticated()">
+    <div  th:each="prod : ${myLocalCart}">
+        <a th:text="${prod.getProduct().getProducts_name() + ' ' + prod.getCount() + '|'}"></a>
+        <form th:method="PATCH" th:action="@{cart}">
+            <label th:for="amount">Изменить количество:</label>
+            <input type="text" id="amount" name="count" >
+            <input type="hidden" id="productId" name="product_id" th:value="${prod.getProduct().getId()}">
+            <input type="hidden" id="userId" name="user_id" th:value="${-1}">
+            <input type="submit" value="Изменить количество">
+        </form>
+        <form th:method="DELETE" th:action="@{/stock/{id}(id=${prod.getProduct().getId()})}">
+            <input type="submit" value="Удалить товар">
+        </form>
+    </div>
+    <br/>
+    <hr/>
+    <form th:method="DELETE" th:action="@{cart}">
+        <input type="submit" value="Очистить корзину">
+    </form>
+</div>
+
+<a th:href="@{/stock}">Вернуться к списку товаров</a>
+</body>
+</html>

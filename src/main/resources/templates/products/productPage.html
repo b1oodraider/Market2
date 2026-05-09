@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Страница товара</title>
+</head>
+<body>
+
+<p th:text="${product.getProductsDescription()}"></p>
+
+<form th:method="POST" th:action="@{{id}(id=${product.getId()})}" th:object="${product}">
+    <input type="submit" value="Добавить в корзину">
+</form>
+
+<a th:href="@{cart}"> Просмотреть корзину</a>
+<a th:href="@{/stock}">Вернуться к списку товаров</a>
+</body>
+</html>

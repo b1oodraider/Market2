@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список товаров</title>
+</head>
+<body>
+
+ <div th:each="product : ${products}">
+   <a th:href="@{stock/{id}(id=${product.getId()})}"
+   th:text="${product.getProductsName() + ', ' + product.getProductsType() + ', ' + product.getProductsInStock()}"></a>
+ </div>
+
+ <div >
+    <a sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')"> hi</a>
+ </div>
+ <a href="stock/addNew" sec:authorize="hasRole('ADMIN')">
+     <input type="submit" id="go_to_make_new_product" value="Add product">
+ </a>
+
+</body>
+</html>

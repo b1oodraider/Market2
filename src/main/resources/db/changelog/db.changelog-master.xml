@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="1" author="junior-dev">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="users"/></not>
+        </preConditions>
+        <createTable tableName="users">
+            <column name="user_id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(100)"/>
+            <column name="phone_number" type="VARCHAR(15)"/>
+            <column name="role" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="junior-dev">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="products"/></not>
+        </preConditions>
+        <createTable tableName="products">
+            <column name="product_id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="products_name" type="VARCHAR(200)"/>
+            <column name="products_type" type="VARCHAR(200)"/>
+            <column name="products_in_stock" type="INTEGER"/>
+            <column name="products_description" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="junior-dev">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="carts"/></not>
+        </preConditions>
+        <createTable tableName="carts">
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_count" type="INTEGER"/>
+        </createTable>
+
+        <addPrimaryKey tableName="carts"
+                       columnNames="user_id, product_id"
+                       constraintName="pk_carts"/>
+
+        <addForeignKeyConstraint baseTableName="carts"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_carts_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="user_id"/>
+
+        <addForeignKeyConstraint baseTableName="carts"
+                                 baseColumnNames="product_id"
+                                 constraintName="fk_carts_product"
+                                 referencedTableName="products"
+                                 referencedColumnNames="product_id"/>
+    </changeSet>
+
+    <changeSet id="4" author="junior-dev">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM products</sqlCheck>
+        </preConditions>
+        <insert tableName="products">
+            <column name="products_name" value="Урбеч гречичный"/>
+            <column name="products_type" value="урбеч"/>
+            <column name="products_in_stock" valueNumeric="1000"/>
+            <column name="products_description" value="урбеч оч вкусный"/>
+        </insert>
+        <insert tableName="products">
+            <column name="products_name" value="Урбеч конопляный"/>
+            <column name="products_type" value="урбеч"/>
+            <column name="products_in_stock" valueNumeric="1000"/>
+            <column name="products_description" value="урбеч оч вкусный"/>
+        </insert>
+        <insert tableName="products">
+            <column name="products_name" value="Кинжал 30см серебро"/>
+            <column name="products_type" value="холодное оружие"/>
+            <column name="products_in_stock" valueNumeric="1000"/>
+            <column name="products_description" value="классный ножик"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
