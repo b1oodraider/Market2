@@ -25,25 +25,25 @@ class ProductServiceTest {
 
     @Test
     void getAll_returnsAllProducts() {
-        ProductEntity product = new ProductEntity(1, "Кинжал", "оружие", 10, "описание");
+        ProductEntity product = new ProductEntity(1, "Кофе Arabica", "кофе", 10, "описание");
         when(productRepository.findAll()).thenReturn(List.of(product));
 
         List<ProductEntity> result = productService.getAll();
 
         assertEquals(1, result.size());
-        assertEquals("Кинжал", result.get(0).getProductsName());
+        assertEquals("Кофе Arabica", result.get(0).getProductsName());
         verify(productRepository).findAll();
     }
 
     @Test
     void getById_whenExists_returnsOptionalWithProduct() {
-        ProductEntity product = new ProductEntity(1, "Кинжал", "оружие", 10, "описание");
+        ProductEntity product = new ProductEntity(1, "Кофе Arabica", "кофе", 10, "описание");
         when(productRepository.findById(1)).thenReturn(Optional.of(product));
 
         Optional<ProductEntity> result = productService.getById(1);
 
         assertTrue(result.isPresent());
-        assertEquals("Кинжал", result.get().getProductsName());
+        assertEquals("Кофе Arabica", result.get().getProductsName());
     }
 
     @Test
@@ -58,7 +58,7 @@ class ProductServiceTest {
     @Test
     void save_callsRepositorySave() {
         ProductEntity product = new ProductEntity();
-        product.setProductsName("Урбеч");
+        product.setProductsName("Чай Sencha");
 
         productService.save(product);
 

@@ -2,19 +2,24 @@ package WebMarket.Market.services;
 
 import WebMarket.Market.DTO.DBCartDTO;
 import WebMarket.Market.models.DBCartEntity;
+import WebMarket.Market.models.ProductEntity;
 import WebMarket.Market.repositories.CartRepository;
+import WebMarket.Market.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartService {
     private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
 
-    public CartService(CartRepository cartRepository) {
+    public CartService(CartRepository cartRepository, ProductRepository productRepository) {
         this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
     }
 
     @Transactional
@@ -34,8 +39,19 @@ public class CartService {
 
     @Transactional
     public void save(int userId, int productId) {
-        DBCartEntity cart = new DBCartEntity(userId, productId, 1);
-        cartRepository.save(cart);
+        ProductEntity product = productRepository.findById(productId).orElse(null);
+        if (product == null) {
+            return;
+        }
+
+        Optional<DBCartEntity> existing = cartRepository.findByUserIdAndProductId(userId, productId);
+
+        if (existing.isPresent()) {
+            int newCount = Math.min(existing.get().getProductCount() + 1, product.getProductsInStock());
+            cartRepository.save(new DBCartEntity(userId, productId, newCount));
+        } else {
+            cartRepository.save(new DBCartEntity(userId, productId, 1));
+        }
     }
 
     @Transactional
@@ -44,7 +60,11 @@ public class CartService {
             cartRepository.deleteAllByUserIdAndProductId(userId, productId);
             return;
         }
-        cartRepository.save(new DBCartEntity(userId, productId, newCount));
+        ProductEntity product = productRepository.findById(productId).orElse(null);
+        int cappedCount = (product != null)
+                ? Math.min(newCount, product.getProductsInStock())
+                : newCount;
+        cartRepository.save(new DBCartEntity(userId, productId, cappedCount));
     }
 
     @Transactional

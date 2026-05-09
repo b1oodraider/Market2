@@ -4,9 +4,10 @@ import WebMarket.Market.DTO.UserDTO;
 import WebMarket.Market.security.SecurityUtils;
 import WebMarket.Market.security.UsersDetails;
 import WebMarket.Market.services.RegistrationService;
-import WebMarket.Market.services.UserService;
+import WebMarket.Market.util.Validators.UserRegValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -26,17 +29,18 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class AuthApiController {
 
-    private final UserService userService;
     private final RegistrationService registrationService;
     private final AuthenticationManager authenticationManager;
     private final SecurityUtils securityUtils;
+    private final UserRegValidator userRegValidator;
 
-    public AuthApiController(UserService userService, RegistrationService registrationService,
-                             AuthenticationManager authenticationManager, SecurityUtils securityUtils) {
-        this.userService = userService;
+    public AuthApiController(RegistrationService registrationService,
+                             AuthenticationManager authenticationManager, SecurityUtils securityUtils,
+                             UserRegValidator userRegValidator) {
         this.registrationService = registrationService;
         this.authenticationManager = authenticationManager;
         this.securityUtils = securityUtils;
+        this.userRegValidator = userRegValidator;
     }
 
     @GetMapping("/me")
@@ -80,29 +84,22 @@ public class AuthApiController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
-        String username = body.get("username");
-        String password = body.get("password");
+    public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+        // @Valid отрабатывает jakarta.validation (@NotEmpty), затем доменные правила
+        // (уникальность username, длина пароля) подключаются тем же UserRegValidator,
+        // что и Thymeleaf-форма регистрации — единый источник истины.
+        // Валидатор содержит null-check, поэтому безопасен даже если @Valid уже нашёл ошибки.
+        userRegValidator.validate(userDTO, bindingResult);
 
-        Map<String, String> errors = new HashMap<>();
-        if (username == null || username.isEmpty()) {
-            errors.put("username", "Имя пользователя не может быть пустым");
-        }
-        if (password == null || password.isEmpty()) {
-            errors.put("password", "Пароль не может быть пустым");
-        }
-        if (password != null && (password.length() < 2 || password.length() > 30)) {
-            errors.put("password", "Пароль должен быть от 2 до 30 символов");
-        }
-        if (username != null && userService.findByUsername(username).isPresent()) {
-            errors.put("username", "Это имя пользователя уже занято");
-        }
-
-        if (!errors.isEmpty()) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError fe : bindingResult.getFieldErrors()) {
+                errors.putIfAbsent(fe.getField(), fe.getDefaultMessage());
+            }
             return ResponseEntity.badRequest().body(errors);
         }
 
-        registrationService.registerUser(new UserDTO(username, password));
+        registrationService.registerUser(userDTO);
         return ResponseEntity.ok(Map.of("message", "ok"));
     }
 

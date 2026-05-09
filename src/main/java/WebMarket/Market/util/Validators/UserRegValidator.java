@@ -22,12 +22,14 @@ public class UserRegValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         UserDTO user = (UserDTO) target;
-        if(userService.findByUsername(user.getUsername()).isPresent()) {
-            errors.rejectValue("username", "", "Username already exists");
+        if (user.getUsername() != null
+                && !user.getUsername().isEmpty()
+                && userService.findByUsername(user.getUsername()).isPresent()) {
+            errors.rejectValue("username", "", "Это имя пользователя уже занято");
         }
-        if(user.getPassword().length() < 2 || user.getPassword().length() > 30) {
-            errors.rejectValue("password", "", "Password must be between 2 and 30 characters");
+        if (user.getPassword() != null
+                && (user.getPassword().length() < 2 || user.getPassword().length() > 30)) {
+            errors.rejectValue("password", "", "Пароль должен быть от 2 до 30 символов");
         }
-
     }
 }

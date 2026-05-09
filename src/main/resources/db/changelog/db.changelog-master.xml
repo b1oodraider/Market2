@@ -78,22 +78,22 @@
             <sqlCheck expectedResult="0">SELECT COUNT(*) FROM products</sqlCheck>
         </preConditions>
         <insert tableName="products">
-            <column name="products_name" value="Урбеч гречичный"/>
-            <column name="products_type" value="урбеч"/>
+            <column name="products_name" value="Кофе в зернах Arabica 1кг"/>
+            <column name="products_type" value="кофе"/>
             <column name="products_in_stock" valueNumeric="1000"/>
-            <column name="products_description" value="урбеч оч вкусный"/>
+            <column name="products_description" value="Свежеобжаренные зерна 100% Arabica, средняя обжарка"/>
         </insert>
         <insert tableName="products">
-            <column name="products_name" value="Урбеч конопляный"/>
-            <column name="products_type" value="урбеч"/>
-            <column name="products_in_stock" valueNumeric="1000"/>
-            <column name="products_description" value="урбеч оч вкусный"/>
+            <column name="products_name" value="Чай зеленый Sencha 100г"/>
+            <column name="products_type" value="чай"/>
+            <column name="products_in_stock" valueNumeric="500"/>
+            <column name="products_description" value="Японский зеленый чай, листовой, премиум-сорт"/>
         </insert>
         <insert tableName="products">
-            <column name="products_name" value="Кинжал 30см серебро"/>
-            <column name="products_type" value="холодное оружие"/>
-            <column name="products_in_stock" valueNumeric="1000"/>
-            <column name="products_description" value="классный ножик"/>
+            <column name="products_name" value="Книга &quot;Чистый код&quot;"/>
+            <column name="products_type" value="книги"/>
+            <column name="products_in_stock" valueNumeric="200"/>
+            <column name="products_description" value="Роберт Мартин — практическое руководство по написанию читаемого кода"/>
         </insert>
     </changeSet>
 

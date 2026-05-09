@@ -11,8 +11,8 @@
 	<groupId>WebMarket</groupId>
 	<artifactId>Market</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Market</name>
-	<description>DagMart</description>
+	<name>GreenCar</name>
+	<description>GreenCar Marketplace — учебный интернет-магазин на Spring Boot 3</description>
 	<url/>
 	<licenses>
 		<license/>

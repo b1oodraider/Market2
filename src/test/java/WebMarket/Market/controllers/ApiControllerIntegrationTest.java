@@ -52,12 +52,12 @@ class ApiControllerIntegrationTest {
 
     @Test
     void getProducts_returnsExistingProduct() throws Exception {
-        productRepository.save(new ProductEntity(0, "Урбеч", "еда", 50, "вкусный"));
+        productRepository.save(new ProductEntity(0, "Кофе Arabica", "кофе", 50, "вкусный"));
 
         mockMvc.perform(get("/api/products"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].productsName").value("Урбеч"))
-                .andExpect(jsonPath("$[0].productsType").value("еда"));
+                .andExpect(jsonPath("$[0].productsName").value("Кофе Arabica"))
+                .andExpect(jsonPath("$[0].productsType").value("кофе"));
     }
 
     @Test
